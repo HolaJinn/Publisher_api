@@ -1,0 +1,21 @@
+// @Author: Anand Awasthi (anand.awasthi@in.ibm.com)
+
+timestamps {
+
+node () {
+  wrap([$class: 'Xvfb']) {
+	stage ('Publisher_API - Checkout') {
+ 	 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'LocalBranch', localBranch: 'master']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'jenkins-token', url: 'https://github.com/awasthan/Publisher_api.git']]])
+	}
+	stage ('Publisher_API - Build') {
+	
+withMaven(
+ maven: 'maven',
+ mavenSettingsConfig: 'afb42767-7657-4aee-a3d2-08f83a568a05') {
+      sh "mvn -f ${JOB_NAME}/pom.xml -B release:prepare release:perform"
+ }
+}
+}
+cleanWs()
+}
+}
